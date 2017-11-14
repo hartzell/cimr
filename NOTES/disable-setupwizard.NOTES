@@ -1,0 +1,20 @@
+From: Noah Kantrowitz <notifications@github.com>
+To: jenkinsci/docker <docker@noreply.github.com>
+Cc: George Hartzell <hartzell@alerce.com>,
+ Comment <comment@noreply.github.com>
+Subject: Re: [jenkinsci/docker] Preventing plugin setup wizard (#310)
+Date: Tue, 14 Nov 2017 01:38:07 +0000 (UTC)
+X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,DNS_FROM_AHBL_RHSBL,HTML_IMAGE_ONLY_32,HTML_MESSAGE,
+	T_RP_MATCHES_RCVD autolearn=no version=3.3.1
+
+If you want to do this from just groovy, I think correct incantation is:
+
+```groovy
+import static jenkins.model.Jenkins.instance as jenkins
+import jenkins.install.InstallState
+if (!jenkins.installState.isSetupComplete()) {
+  println '--> Neutering SetupWizard'
+  InstallState.INITIAL_SETUP_COMPLETED.initializeState()
+}
+```
