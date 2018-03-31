@@ -230,9 +230,9 @@ might actually be simpler as the number of CIMR instances scales.
 #### Checklist
 
 - [ ] You've decided on the URL for the Jenkins master, including:
-  - [ ] the hostname,
-  - [ ] the port, and
-  - [ ] the prefix.
+  - [ ] the hostname: ________________
+  - [ ] the port: _________________, and
+  - [ ] the prefix: ________________.
 
 ### The CIMR Docker image
 
