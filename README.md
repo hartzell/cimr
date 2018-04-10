@@ -57,10 +57,10 @@ specifying policy (Pandora's Box).
 CIMR uses an *opinionated* subset of Jenkins' capabilities to provide
 a minimal service that can run the jobs described above.
 
-- By limiting scope and prescribing a particular configuration it
-  becomes *simpler*.
+By limiting scope and prescribing a particular configuration it
+becomes *simpler*.
 
-- By documenting and automating its configuration it becomes *easier*.
+By documenting and automating its configuration it becomes *easier*.
 
 Simplicity and ease lead to reliability.
 
