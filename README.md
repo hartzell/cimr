@@ -123,31 +123,34 @@ GitHub.  These abilities could be used to gain additional access.
 what is appropriate.
 
 A simple, basic approach is to keep the secrets private and not share
-control of the instance with anyone you don't completely trust.
+control of the instance with anyone you don't completely trust.  CIMR
+instances are lightweight and easy to set up, give them one of their
+own.
+
+You might consider using dedicated "service" accounts on GitHub and
+the slave systems instead of using your personal account.
 
 If that sounds good to you:
 
-1. store the sensitive information in files that only you can read, on
-   the theory that anyone who can read the files can already
-   impersonate you; and
+1. store the sensitive information in files that only the trusted user
+   (you, or a service account) can read, on the theory that anyone who
+   can read the files can already impersonate that user; and
 2. pass the info into the Docker container via environment variables
    to avoid poorly protected copies existing on durable storage.
 
 The sample `docker-run.sh` script implements this technique, looking
-for files containing the secrets in a `~/.cimr-secrets` directory.
-Ensure that only you can read this directory.  E.g.:
+for files containing the secrets in a `~trusted-user/.cimr-secrets`
+directory.  Ensure that only the trusted user can read this directory.
+E.g.:
 
 ```sh
-mkdir ~/.cimr-secrets
-chmod 700 ~/.cimr-secrets
+mkdir ~trusted-user/.cimr-secrets
+chmod 700 ~trusted-user/.cimr-secrets
 ```
 
 Don't share the Jenkins `admin` password with anyone you don't trust
-with access to your account.  If you do, they can create jobs and run
-them using your credentials.
-
-You might consider using dedicated "service" accounts on GitHub and
-the slave systems instead of using your personal account.
+with access to the (your) account.  If you do, they can create jobs
+and run them using its (your) credentials.
 
 More complicated approaches might be worth considering (that sentence
 should make you *itch* a bit...).
@@ -157,13 +160,13 @@ should make you *itch* a bit...).
 - [ ] You've decided on an approach to handling your secrets and you
   know where you'll be storing:
   - [ ] the GitHub Personal Access Token
-    (e.g. `~/.cimr-secrets/github-access-token`),
+    (e.g. `~trusted-user/.cimr-secrets/github-access-token`),
   - [ ] the Jenkins `admin` password
-    (e.g. `~/.cimr-secrets/admin-password`),
+    (e.g. `~trusted-user/.cimr-secrets/admin-password`),
   - [ ] the private part of the Jenkins<->GitHub SSH key
-    (e.g. `~/.cimr-secrets/git-key`), and
+    (e.g. `~trusted-user/.cimr-secrets/git-key`), and
   - [ ] the private part of the Jenkins<->slaves SSH key
-    (e.g. `~/.cimr-secrets/ssh-key`).
+    (e.g. `~trusted-user/.cimr-secrets/ssh-key`).
 
 ### Set up a repository to manage this CIMR instance
 
@@ -224,7 +227,7 @@ container's port `8080`, and that you include the
 Jenkins (the "prefix" is the [path component][url-syntax] of the URL).
 
 More complex (*itch*) scenarios involving reverse proxies and/or
-"container orchestration engines" (Swarm, Mesos) are also possible and
+"container orchestration engines" (a Hod, Mesos) are also possible and
 might actually be simpler as the number of CIMR instances scales.
 
 #### Checklist
@@ -261,13 +264,13 @@ repositories you'll be using (including the CIMR configuration
 repository you created above).  You might use your account or a
 dedicated service account or &hellip;.
 
-Create an SSH key and add the public part to the user's GitHub account
-([instructions here][github-ssh-key], don't worry about the ssh-agent
-bit).  Save the private part in a safe place, CIMR will store it in a
-Jenkins credential named `git-key`.  E.g.:
+Create an SSH key and add the public part to the trusted user's GitHub
+account ([instructions here][github-ssh-key], don't worry about the
+ssh-agent bit).  Save the private part in a safe place, CIMR will
+store it in a Jenkins credential named `git-key`.  E.g.:
 
 ```sh
-ssh-keygen -a 100 -t ed25519 -f ~/.cimr-secrets/git-key
+ssh-keygen -a 100 -t ed25519 -f ~trusted-user/.cimr-secrets/git-key
 ```
 
 Create a Personal Access Token ([instructions here][github-token])
@@ -275,8 +278,8 @@ with scopes that include `repo:status`, `repo:public_repo`,
 `read:org`, and `admin:repo_hook`.  Substitute `repo` scope for
 `repo:status` and `repo:public_repo` if you're working with private
 repositories.  Save it in a safe place
-(e.g. `~/.cimr-secrets/github-api-token`), CIMR will store it in a
-Jenkins credential named `github-api-token`.
+(e.g. `~trusted-user/.cimr-secrets/github-api-token`), CIMR will store
+it in a Jenkins credential named `github-api-token`.
 
 #### Checklist
 
@@ -287,10 +290,10 @@ Jenkins credential named `github-api-token`.
     trigger builds;
 - [ ] you've created an SSH key, added the public part to the GitHub
   user's account and stashed the private part someplace safe
-  (e.g. `~/.cimr-secrets/git-key`); and
+  (e.g. `~trusted-user/.cimr-secrets/git-key`); and
 - [ ] you've created a Personal Access Token with the appropriate
   scopes for the GitHub user and stashed it someplace safe
-  (e.g. `~/.cimr-secrets/github-api-token`).
+  (e.g. `~trusted-user/.cimr-secrets/github-api-token`).
 
 ### The slave system account
 
@@ -301,7 +304,8 @@ account or &hellip;.
 Create an SSH key for that account and stash it someplace safe.  E.g.
 
 ```sh
-ssh-keygen -a 100 -t ed25519 -f ~/.cimr-secrets/slaves-key
+# the slave user might be the same account as the trusted-user...
+ssh-keygen -a 100 -t ed25519 -f ~slave-user/.cimr-secrets/slaves-key
 ```
 
 We'll add the public part to the `authorized_keys` file on the slave
@@ -312,7 +316,7 @@ named `slaves-key`.
 
 - [ ] You have an account set up on the slave systems; and
 - [ ] you've created an SSH key and stashed it someplace safe
-  (e.g. `~/.cimr-secrets/slaves-key`).
+  (e.g. `~slave-user/.cimr-secrets/slaves-key`).
 
 ### The slave systems
 
@@ -326,7 +330,7 @@ authorized keys file (`~slave-user/.ssh/authorized_keys`) on each of
 the slave systems.  E.g.
 
 ```sh
-cat ~/.cimr-secrets/slaves-key.pub >> ~slave-user/.ssh/authorized_keys
+cat ~trusted-user/.cimr-secrets/slaves-key.pub >> ~slave-user/.ssh/authorized_keys
 ```
 
 Create a directory on each system to use as the Jenkins working
@@ -346,13 +350,13 @@ above.
 ### Choose a Jenkins admin user password
 
 The Jenkins admin user needs a password.  You should choose one and
-stash it someplace safe (e.g. `~/.cimr-secrets/admin-password`).
+stash it someplace safe (e.g. `~trusted-user/.cimr-secrets/admin-password`).
 
 #### Checklist
 
 - [ ] You've settled on a password for the Jenkins admin user, and
   - [ ] you've stashed it someplace safe
-    (e.g. `~/.cimr-secrets/admin-password`).
+    (e.g. `~trusted-user/.cimr-secrets/admin-password`).
 
 ### Assemble a script to start the Jenkins master
 
@@ -419,9 +423,9 @@ in which case the options should include:
 
 Here's a sample script that does the things above, it assumes that
 you'll start it in a directory that contains the `cimr_config.yaml`
-file and it reads your secrets from files in `~/.cimr-secrets`.  You
-can't use it as is, but you could copy it and update each line to
-match your situation.
+file and it reads your secrets from files in
+`~trusted-user/.cimr-secrets`.  You can't use it as is, but you could
+copy it and update each line to match your situation.
 
 ```sh
 #!/bin/bash
@@ -704,7 +708,7 @@ the public part of the SSH key is correctly installed.  You'll want to
 use your CIMR-specific key, like so:
 
 ```
-ssh -T -i ~/.cimr-secrets/git-key github.hostname.com
+ssh -T -i ~trusted-user/.cimr-secrets/git-key github.hostname.com
 ```
 
 #### Test the Jenkins<->slaves SSH key
@@ -713,7 +717,7 @@ If the Jenkins master is having trouble connecting to the slaves, you
 can try to make an ssh connection yourself:
 
 ```
-ssh -i ~/.cimr-secrets/slaves-key slave.hostname.com
+ssh -i ~trusted-user/.cimr-secrets/slaves-key slave.hostname.com
 ```
 
 ## Setting up jobs
