@@ -889,7 +889,7 @@ job('pull-request-to-develop-demo') {
   }
   triggers {
     githubPullRequest {
-      admins(['someuser])
+      admins(['someuser'])
       useGitHubHooks()
       whiteListTargetBranches(['develop'])
       allowMembersOfWhitelistedOrgsAsAdmin()
