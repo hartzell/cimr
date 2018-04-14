@@ -825,8 +825,15 @@ repository named `demo-cimr`.  It uses:
 - the "ghprb" plugin to trigger a job when a pull request is created
   or updated.
 
-No warranty (touch it up as necessary, e.g. the `label`, git scm URL),
-but it'll get you started&hellip;
+Heads up, if you whitelist *any* branches in the Pull Request Builder,
+you must whitelist *all* of the branches you want to build, otherwise
+they're silently skipped (unless you turn the logging to `FINEST`).
+
+Configuring a logger for `org.jenkinsci.plugins.ghprb` at the `FINEST`
+log level can be useful.
+
+No warranty (touch it up as necessary, e.g. the git scm URL), but
+it'll get you started&hellip;
 
 ```groovy
 // This job will fire whenever things are pushed to the develop branch
