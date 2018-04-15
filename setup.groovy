@@ -142,7 +142,6 @@ instance.injector.getInstance(GlobalJobDslSecurityConfiguration.class).setUseScr
 // Enable CuRF protection.  
 // Might require starting with -Dhudson.security.csrf.requestfield=Jenkins-Crumb
 // See JENKINS-23793
-// instance.crumbIssuer = new DefaultCrumbIssuer(true)
 // https://gist.github.com/ivan-pinatti/7d8a877aff42350f16fcb1eb094818d9
 instance.setCrumbIssuer(new DefaultCrumbIssuer(true))
 
