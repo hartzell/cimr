@@ -11,6 +11,7 @@ import hudson.model.*
 import hudson.plugins.sshslaves.*
 import hudson.plugins.sshslaves.verifiers.*
 import hudson.security.*
+import hudson.security.csrf.DefaultCrumbIssuer
 import hudson.slaves.*
 import hudson.util.Secret
 import java.lang.reflect.Field
@@ -117,9 +118,9 @@ instance.getAuthorizationStrategy().add(Jenkins.ADMINISTER, c.admin_username)
 // The anonymous use needs all three of these so that the
 // `http://<SERVER>/job/<JOBNAME>/build` API endpoint works.
 // But it also give anonymous access to your jenkins.  Choose your poison.
-instance.getAuthorizationStrategy().add(hudson.model.Hudson.READ, 'anonymous')
-instance.getAuthorizationStrategy().add(hudson.model.Item.READ, 'anonymous')
-instance.getAuthorizationStrategy().add(hudson.model.Item.BUILD, 'anonymous')
+// instance.getAuthorizationStrategy().add(hudson.model.Hudson.READ, 'anonymous')
+// instance.getAuthorizationStrategy().add(hudson.model.Item.READ, 'anonymous')
+// instance.getAuthorizationStrategy().add(hudson.model.Item.BUILD, 'anonymous')
 
 // disable tcp port for JNLP agents.
 instance.setSlaveAgentPort(-1)
@@ -137,6 +138,13 @@ instance.injector.getInstance(AdminWhitelistRule.class).setMasterKillSwitch(fals
 
 // Disable JobDSL security.  Seems like this is getting the attribute
 instance.injector.getInstance(GlobalJobDslSecurityConfiguration.class).setUseScriptSecurity(false)
+
+// Enable CuRF protection.  
+// Might require starting with -Dhudson.security.csrf.requestfield=Jenkins-Crumb
+// See JENKINS-23793
+// instance.crumbIssuer = new DefaultCrumbIssuer(true)
+// https://gist.github.com/ivan-pinatti/7d8a877aff42350f16fcb1eb094818d9
+instance.setCrumbIssuer(new DefaultCrumbIssuer(true))
 
 instance.save()
 

@@ -1,5 +1,5 @@
 # USE THE LTS version...
-FROM jenkins/jenkins:2.76
+FROM jenkins/jenkins:2.116
 MAINTAINER George Hartzell <hartzell@alerce.com>
 
 # Install these plugins
@@ -7,18 +7,19 @@ MAINTAINER George Hartzell <hartzell@alerce.com>
 # or just refer to them as `plugin` to get current
 # at `docker build` time
 RUN /usr/local/bin/install-plugins.sh  \
-    credentials:2.1.14                 \
-    credentials-binding:1.13           \
-    git:3.5.1                          \
-    github:1.28.0                      \
-    ghprb:1.39.0                       \
-    job-dsl:1.64                       \
-    junit:1.21                         \
-    mailer:1.20                        \
-    matrix-auth:1.7                    \
+    credentials:2.1.16                 \
+    credentials-binding:1.16           \
+    git:3.8.0                          \
+    github:1.29.0                      \
+    ghprb:1.40.0                       \
+    jdk-tool:1.1                       \
+    job-dsl:1.69                       \
+    junit:1.24                         \
+    mailer:1.21                        \
+    matrix-auth:2.2                    \
     ssh-credentials:1.13               \
-    ssh-slaves:1.21                    \
-    tap:2.1
+    ssh-slaves:1.26                    \
+    tap:2.2.1
 
 EXPOSE 8080
 
