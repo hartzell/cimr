@@ -9,6 +9,7 @@ MAINTAINER George Hartzell <hartzell@alerce.com>
 RUN /usr/local/bin/install-plugins.sh  \
     credentials:2.1.16                 \
     credentials-binding:1.16           \
+    file-found-trigger:1.5             \
     git:3.8.0                          \
     github:1.29.0                      \
     ghprb:1.40.0                       \
