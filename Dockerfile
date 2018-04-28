@@ -1,5 +1,5 @@
 # USE THE LTS version...
-FROM jenkins/jenkins:2.117
+FROM jenkins/jenkins:2.118
 MAINTAINER George Hartzell <hartzell@alerce.com>
 
 # Install these plugins
