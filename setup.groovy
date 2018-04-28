@@ -51,6 +51,12 @@ def _validate = { c ->
       assert (slave[it])  : "slave " + it + " must not be null"
     }
   }
+
+  if ((c.containsKey('email_smtp_username')
+       && ! c.containsKey('email_smtp_password')) ||
+      (! c.containsKey('email_smtp_username') && c.containsKey('email_smtp_password'))) {
+    throw new Exception("You must provide BOTH SMTP username and password")
+  }
 }
 
 // Takes a YAML string as input, loads it, merges a few overridable bits,
@@ -74,6 +80,9 @@ def configLoader = { y ->
   }
   if ( env.containsKey('JENKINS_GITHUB_TOKEN')) {
     c.github_api_token = env.JENKINS_GITHUB_TOKEN
+  }
+  if ( env.containsKey('JENKINS_EMAIL_SMTP_PASSWORD')) {
+    c.email_smtp_password = env.JENKINS_EMAIL_SMTP_PASSWORD
   }
 
   _validate(c)
@@ -125,7 +134,7 @@ instance.getAuthorizationStrategy().add(Jenkins.ADMINISTER, c.admin_username)
 // disable tcp port for JNLP agents.
 instance.setSlaveAgentPort(-1)
 
-// Disable all of the Agent protocols too (fewer warnings) by passing in 
+// Disable all of the Agent protocols too (fewer warnings) by passing in
 // an empty set of 'em.
 def protos = [] as Set
 instance.setAgentProtocols(protos)
@@ -139,7 +148,7 @@ instance.injector.getInstance(AdminWhitelistRule.class).setMasterKillSwitch(fals
 // Disable JobDSL security.  Seems like this is getting the attribute
 instance.injector.getInstance(GlobalJobDslSecurityConfiguration.class).setUseScriptSecurity(false)
 
-// Enable CuRF protection.  
+// Enable CuRF protection.
 // Might require starting with -Dhudson.security.csrf.requestfield=Jenkins-Crumb
 // See JENKINS-23793
 // https://gist.github.com/ivan-pinatti/7d8a877aff42350f16fcb1eb094818d9
@@ -241,7 +250,18 @@ sshDesc.save()
 // set up the outbound mailer
 def mailDesc = instance.getDescriptor("hudson.tasks.Mailer")
 mailDesc.setSmtpHost(c.email_smtp_host)
-mailDesc.setReplyToAddress(c.email_reply_to_addr)
+mailDesc.setReplyToAddress(c.email_reply_to_address)
+if (c.containsKey('email_smtp_usessl')) {
+    mailDesc.setUseSsl(c.email_smtp_usessl)
+}
+if (c.containsKey('email_smtp_port')) {
+    // yes, it wants a string, not an int...
+    mailDesc.setSmtpPort(c.email_smtp_port.toString())
+}
+if (c.containsKey('email_smtp_username') &&
+    c.containsKey('email_smtp_password')) {
+    mailDesc.setSmtpAuth(c.email_smtp_username, c.email_smtp_password)
+}
 mailDesc.save()
 
 // Set up the GitHub Plugin
@@ -327,7 +347,7 @@ if (c.jobs) {
 }
 
 // If there's a seed job, run it.
-def job = hudson.model.Hudson.instance.getItem("seed") 
+def job = hudson.model.Hudson.instance.getItem("seed")
 if (job) {
     job.scheduleBuild()
 }

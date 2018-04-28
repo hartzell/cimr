@@ -27,7 +27,7 @@ EXPOSE 8080
 ### no gefingerpoken below this line ###
 
 # Skip Jenkins normal first-time setup stuff
-ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
+ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false -Dmail.smtp.starttls.enable=true
 
 # Disable JNLP since we use ssh (Jenkins magic, sigh...)
 ENV JENKINS_SLAVE_AGENT_PORT=-1
