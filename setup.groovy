@@ -221,6 +221,18 @@ jenkinsUsernameAndPassword = new UsernamePasswordCredentialsImpl(
 )
 store.addCredentials(Domain.global(), jenkinsUsernameAndPassword)
 
+////////////////////////////////
+// SMTP Username and Password credentials
+//
+smtpUsernameAndPassword = new UsernamePasswordCredentialsImpl(
+  CredentialsScope.GLOBAL,
+  "smtp-user-and-password",
+  "Username and password to use for talking to remote mail servers",
+  c.email_smtp_username,
+  c.email_smtp_password
+)
+store.addCredentials(Domain.global(), smtpUsernameAndPassword)
+
 ////////////////////////////////////////////////////////////////
 // Various Global Configuration bits
 
