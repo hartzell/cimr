@@ -917,6 +917,31 @@ true
 }
 ```
 
+### Pasting jobs into the Groovy console
+
+Here's a snippet that will let you experiment with a job by pasting
+the DSL into the Groovy console:
+
+
+```groovy
+import javaposse.jobdsl.dsl.*
+import  javaposse.jobdsl.plugin.*
+
+JenkinsJobManagement jm = new JenkinsJobManagement(System.out, [:], new File('.'));
+DslScriptLoader dslScriptLoader = new DslScriptLoader(jm)
+
+def myDsl = '''
+job('sample-job') {
+#
+# Job body goes here...
+#
+}
+'''
+
+dslScriptLoader.runScript(myDsl)
+
+```
+
 ## Variations on the theme
 
 ### Persistent jenkins home directory
@@ -938,6 +963,8 @@ You'll need to be sure that the Docker user can read/write to it.
 ### Docker swarm, reverse proxy, etc &hellip;
 
 https://hackernoon.com/architecting-a-highly-scalable-golang-api-with-docker-swarm-traefik-875d1871cc1f
+
+
 
 [job-dsl]: https://github.com/jenkinsci/job-dsl-plugin
 [job-dsl-api]: https://jenkinsci.github.io/job-dsl-plugin/
