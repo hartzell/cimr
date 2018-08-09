@@ -1,5 +1,5 @@
 # USE THE LTS version...
-FROM jenkins/jenkins:2.118
+FROM jenkins/jenkins:2.136-alpine
 MAINTAINER George Hartzell <hartzell@alerce.com>
 
 # Install these plugins
