@@ -73,7 +73,8 @@ Simplicity and ease lead to reliability.
   YAML file.
 - Only configure two users and two levels of authorization (`admin`
   and `anonymous`) -- replication without fuss means that groups that
-  need isolation can be given separate systems.
+  need isolation can be given separate systems.  Anonymous access is
+  "opt-in", default is to disable it.
 - Configure one or more Jenkins slaves that communicate with the
   master via SSH.
 - Use the GitHub and the GitHub Pull Request Builder plugins to
@@ -494,6 +495,9 @@ jenkins_public_url: http://myhost.mydomain.com:4242/jenkinses/team-alpha/project
 # be set via the JENKINS_ADMIN_PASSWORD environment variable.
 admin_username: admin
 admin_password: SET ME VIA ENV VAR!
+
+# Enable anonymous read-only access to the console and API
+enable_anonymous_access: true
 
 # ReplyTo address for admin/notification emails and host that will
 # relay email for us.
