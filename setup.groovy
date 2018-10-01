@@ -127,7 +127,7 @@ instance.getAuthorizationStrategy().add(Jenkins.ADMINISTER, c.admin_username)
 // Enable anonymous access if it's configured.  The anonymous user
 // needs all three of these so that the
 // `http://<SERVER>/job/<JOBNAME>/build` API endpoint works.
-if (c.enable_anonymous_access) {
+if (c.containsKey('enable_anonymous_access') && c.enable_anonymous_access) {
     instance.getAuthorizationStrategy().add(hudson.model.Hudson.READ, 'anonymous')
     instance.getAuthorizationStrategy().add(hudson.model.Item.READ, 'anonymous')
     instance.getAuthorizationStrategy().add(hudson.model.Item.BUILD, 'anonymous')
