@@ -124,12 +124,14 @@ instance.getAuthorizationStrategy().add(Jenkins.ADMINISTER, c.admin_username)
 // and perhaps make your additional users (see above) into admins
 // instance.getAuthorizationStrategy().add(Jenkins.ADMINISTER, 'mickey')
 
-// The anonymous use needs all three of these so that the
+// Enable anonymous access if it's configured.  The anonymous user
+// needs all three of these so that the
 // `http://<SERVER>/job/<JOBNAME>/build` API endpoint works.
-// But it also give anonymous access to your jenkins.  Choose your poison.
-// instance.getAuthorizationStrategy().add(hudson.model.Hudson.READ, 'anonymous')
-// instance.getAuthorizationStrategy().add(hudson.model.Item.READ, 'anonymous')
-// instance.getAuthorizationStrategy().add(hudson.model.Item.BUILD, 'anonymous')
+if (c.enable_anonymous_access) {
+    instance.getAuthorizationStrategy().add(hudson.model.Hudson.READ, 'anonymous')
+    instance.getAuthorizationStrategy().add(hudson.model.Item.READ, 'anonymous')
+    instance.getAuthorizationStrategy().add(hudson.model.Item.BUILD, 'anonymous')
+}
 
 // disable tcp port for JNLP agents.
 instance.setSlaveAgentPort(-1)
